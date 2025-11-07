@@ -1,91 +1,21 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import "./BirthdayCard.css";
 import frontPhoto from "./senpai.jpg";
 import coverPhoto from "./anu3.jpg";
 
 const BirthdayCard = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(null);
-  const [showCard, setShowCard] = useState(false);
   const [showCelebration, setShowCelebration] = useState(false);
 
-  // Calculate Texas midnight (Central Time)
-  const getTexasMidnight = () => {
-    const now = new Date();
-    const texasTime = new Date(now.toLocaleString("en-US", { timeZone: "America/Chicago" }));
-    const tomorrow = new Date(texasTime);
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    tomorrow.setHours(0, 0, 0, 0);
-    return tomorrow.getTime();
-  };
-
-  useEffect(() => {
-    const texasMidnight = getTexasMidnight();
-    const now = new Date().getTime();
-    
-    if (now >= texasMidnight) {
-      setShowCard(true);
-      return;
-    }
-
-    const timer = setInterval(() => {
-      const now = new Date().getTime();
-      const distance = texasMidnight - now;
-
-      if (distance <= 0) {
-        clearInterval(timer);
-        setShowCard(true);
-        // Start celebration animation
-        setShowCelebration(true);
-        setTimeout(() => setShowCelebration(false), 5000); // Celebration lasts 5 seconds
-      } else {
-        setTimeLeft({
-          hours: Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
-          minutes: Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)),
-          seconds: Math.floor((distance % (1000 * 60)) / 1000)
-        });
-      }
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, []);
-
   const handleCardClick = () => {
-    if (showCard) {
-      setIsOpen(!isOpen);
+    if (!isOpen) {
+      setIsOpen(true);
+
+      // Optional celebration animation on open
+      setShowCelebration(true);
+      setTimeout(() => setShowCelebration(false), 5000);
     }
   };
-
-  if (!showCard && timeLeft) {
-    return (
-      <div className="countdown-container">
-        <div className="countdown-content">
-          <div className="countdown-title">🎉 Birthday Countdown 🎉</div>
-          <div className="countdown-subtitle">Your special surprise unlocks at midnight!</div>
-          <div className="countdown-timer">
-            <div className="time-unit">
-              <span className="time-number">{timeLeft.hours.toString().padStart(2, '0')}</span>
-              <span className="time-label">Hours</span>
-            </div>
-            <div className="time-separator">:</div>
-            <div className="time-unit">
-              <span className="time-number">{timeLeft.minutes.toString().padStart(2, '0')}</span>
-              <span className="time-label">Minutes</span>
-            </div>
-            <div className="time-separator">:</div>
-            <div className="time-unit">
-              <span className="time-number">{timeLeft.seconds.toString().padStart(2, '0')}</span>
-              <span className="time-label">Seconds</span>
-            </div>
-          </div>
-          <div className="countdown-message">
-            <p>Get ready for something special! 🎂</p>
-            <p>Texas Time Zone (CT)</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="birthday-card-container">
@@ -114,14 +44,11 @@ const BirthdayCard = () => {
         </div>
       )}
 
-      {/* Blur overlay that disappears when card is shown */}
-      {!showCard && <div className="blur-overlay"></div>}
-      
       <div
-        className={`birthday-card ${isOpen ? "open" : ""} ${!showCard ? "blurred" : ""}`}
+        className={`birthday-card ${isOpen ? "open" : ""}`}
         onClick={handleCardClick}
       >
-        {/* Front of the card - Closed state */}
+        {/* Front Closed Card */}
         <div className="card-front">
           <div className="front-content">
             <div className="front-image-section">
@@ -132,9 +59,6 @@ const BirthdayCard = () => {
                   className="front-image"
                 />
                 <div className="gradient-overlay"></div>
-                <div className="floating-elements">
-                  
-                </div>
               </div>
             </div>
             <div className="front-text-section">
@@ -160,9 +84,8 @@ const BirthdayCard = () => {
           </div>
         </div>
 
-        {/* Inside of the card - Opened state */}
+        {/* Inside Card */}
         <div className="card-inside">
-          {/* Left side - Landscape Photo */}
           <div className="inside-left">
             <div className="photo-display">
               <div className="photo-wrapper">
@@ -186,7 +109,6 @@ const BirthdayCard = () => {
             </div>
           </div>
 
-          {/* Right side - Message */}
           <div className="inside-right">
             <div className="message-scroll">
               <div className="message-header">
@@ -248,7 +170,7 @@ const BirthdayCard = () => {
                 <div className="signature-section">
                   <div className="signature-line"></div>
                   <p className="signature">With warmest wishes,</p>
-                  <p className="signature-name">Your Beautiful Half </p>
+                  <p className="signature-name">Your Beautiful Half</p>
                   <p className="signature-name">Jester</p>
                 </div>
               </div>
@@ -257,7 +179,7 @@ const BirthdayCard = () => {
         </div>
       </div>
 
-      {!isOpen && showCard && (
+      {!isOpen && (
         <div className="instruction">
           <p>Click anywhere to open this special birthday card</p>
           <div className="pulse-animation"></div>
